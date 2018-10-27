@@ -140,34 +140,56 @@ namespace fuzzyLogicToolbox
             float ymax = 250;
             float xsize = xmax - xmin;
             float ysize = ymax - ymin;
+            float [] input=new float[mechanics.mainSystem.numVariables()];
+            input[0] = trackBar1.Value/10f;
+            input[1] = trackBar2.Value / 10f;
+            input[2] = trackBar3.Value / 10f;
+            float[] maxinput = new float[] {1, 1, 1 };
 
 
 
             //basicVariable = new FuzzyVariable(numMf, minimum, maximum);
 
             Graphics g = this.panel1.CreateGraphics();
-            float[][][] outputs=new float[1000][][];
+            float[,][] outputs=new float[1000, numV][];
             for (int j = 0; j < numV; j++)
             {
                 for (int k = 0; k < 1000; k++)
                 {
-                    outputs[k][j] = mechanics.mainSystem.Fuzzify(j, minimum + (maximum - minimum) * j / 1000);
+                    outputs[k,j] = mechanics.mainSystem.Fuzzify(j, minimum + (maximum - minimum) * k / 1000);
                 }
             }
 
-            float xsmin, ysmin, xssize, yssize;
+            float xsmin, ysmin, xssize, yssize, tempmax;
+            float maxmax=0f;
             int[] antecends;
-            
-            for (int i = 0; i< numR;i++)
+
+            for (int i = 0; i < numR; i++)
             {
 
-                for (int j = 0; j < numV; j++)
+                tempmax=mechanics.mainSystem.CalculateRuleC(maxinput, i);
+                if(tempmax>maxmax)
                 {
-                    xssize = xsize / (numV + 1);
-                    yssize = ysize / (numR);
+
+                    maxmax = tempmax;
+                }
+
+            }
+            if (maxmax == 0)
+                maxmax = 1;
+            //but you messed up big time and im cross with you
+
+            for (int i = 0; i< numR;i++)
+            {
+                int j;
+                xssize = xsize / (numV + 1);
+                yssize = ysize / (numR);
+                ysmin = ymin + i * yssize;
+
+                for (j = 0; j < numV; j++)
+                {
 
                     xsmin = xmin + j * xssize;
-                    ysmin = ymin + i * yssize;
 
                     g.FillRectangle(Brushes.Yellow, xsmin,
                       ysmin, 0.95f*xsize/(numV+1), 0.95f * ysize / (numR));
@@ -178,14 +200,32 @@ namespace fuzzyLogicToolbox
                         for (int k = 0; k < 1000; k++)
                         {
 
-                            g.FillRectangle(Brushes.Red, xsmin +  (xssize*0.95f) * j / 1000,
-                                ysmin - (yssize * 0.95f) * (outputs[k][][i]-1), 1, 1);  //used 1,1 for a pixel only
+                            g.FillRectangle(Brushes.Red, xsmin +  (xssize*0.95f) * k / 1000,
+                                ysmin - (yssize * 0.95f) * (outputs[k,j][mechanics.mainSystem.MfOfRule(i)[j]]-1), 1, 1);  //used 1,1 for a pixel only
                         }
+                    g.FillRectangle(Brushes.Red, xsmin + (xssize * 0.95f) * input[j],
+                        ysmin - (yssize * 0.95f) * (outputs[(int)(input[j]*999), j][mechanics.mainSystem.MfOfRule(i)[j]] - 1), 3, 3);  //used 1,1 for a pixel only
 
 
                 }
+                xsmin = xmin + j * xssize;
+
+                g.FillRectangle(Brushes.Aqua, xsmin,
+                      ysmin, 0.95f * xsize / (numV + 1), 0.95f * ysize / (numR));
+
+                g.FillRectangle(Brushes.Red, xsmin + (xssize * 0.95f) * mechanics.mainSystem.CalculateRuleC(input, i)/maxmax,
+                 ysmin - (yssize * 0.95f) * (mechanics.mainSystem.CalculateRuleA(input, i) - 1), 3, 3);
+ 
 
             }
+
+
+
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            viewRules_Click(sender, e);
         }
     }
 }

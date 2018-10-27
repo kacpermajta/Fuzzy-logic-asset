@@ -23,6 +23,14 @@ namespace fuzzyLogicToolbox
             return output;
 
         }
+        public float Fuzzify(float input, int mfNum)
+        {
+
+            return memberFunctions[mfNum].fuzzify(input);
+
+
+        }
+
 
         public FuzzyVariable(FuzzyMemberFcn[] mf)
         {

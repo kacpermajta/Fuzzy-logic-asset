@@ -11,6 +11,11 @@ namespace fuzzyLogicToolbox
         FuzzyVariable[] inputVar;
         FuzzyRule[] sysRule;
 
+        public int[] MfOfRule(int i)
+        {
+            return sysRule[i].Mf;
+        }
+
         public int numRules()
         {
             return sysRule.Length;
@@ -92,11 +97,32 @@ namespace fuzzyLogicToolbox
         {
             return inputVar[num].Fuzzify(val);
         }
-        public float CalculateRule(float input, int numRule)
+        public float Fuzzify(int num, int numMf, float val)
+        {
+            return inputVar[num].Fuzzify(val, numMf);
+        }
+        public float CalculateRuleA(float[] rawInput, int numRule)
+        {
+            int size= rawInput.Length;
+            float[] input = new float[size];
+            for (int i = 0; i<size; i++)
+            {
+                input[i] = Fuzzify(numRule, sysRule[numRule].Mf[i], rawInput[i]);
+            }
+            return sysRule[numRule].antecedent(input);
+
+        }
+        public float CalculateRuleC(float[] input, int numRule)
+        {
+            return sysRule[numRule].consequent(input);
+
+        }
+        public float Calculate(float [] input)
         {
 
 
+
         }
-        
+
     }
 }

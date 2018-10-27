@@ -9,7 +9,7 @@ namespace fuzzyLogicToolbox
     public enum MfMode {NON, OR, AND, INC, INCOR, INCAND };
     class FuzzyRule
     {
-        //int[] Mf;
+        public int[] Mf;
         MfMode[] MfMode;
         float[] param;
         bool weighted, incOR, incAND, prioritizeAND;
@@ -50,6 +50,13 @@ namespace fuzzyLogicToolbox
 
         public float antecedent(float[] input)
         {
+            //int rawSize = rawInput.Length;
+            //float[] input = new float[rawSize];
+
+            //for (int i=0; i<rawSize; i++)
+            //{
+            //    input[i]=mechanics.mainSystem.
+            //}
             int size = MfMode.Length;
             
             if (input.Length < size)
@@ -94,10 +101,20 @@ namespace fuzzyLogicToolbox
                 else
                     return floor;
             }
+            else if (numAv == 0 )
+            {
+                return celling;
+
+            }
 
             strenght = sum / numAv;
 
-            return strenght;
+            if (strenght > celling)
+                return celling;
+            else if (strenght < floor)
+                return floor;
+            else
+                return strenght;
         }
 
         public float consequent(float[] input)
@@ -114,9 +131,10 @@ namespace fuzzyLogicToolbox
             output += param[size];
             return output;
         }
-        public FuzzyRule(MfMode[] mode, float singleton)
+        public FuzzyRule(MfMode[] mode, float singleton,int[] mfV)
         {
             MfMode = mode;
+            Mf = mfV;
             int size = mode.Length;
             param = new float[size+1];
             param[size] = singleton;
@@ -124,7 +142,7 @@ namespace fuzzyLogicToolbox
         }
 
 
-        public FuzzyRule(MfMode[] mode, float[] par)
+        public FuzzyRule(MfMode[] mode, float[] par, int[] mfV)
         {
             int size = mode.Length;
             int numPar = par.Length;
@@ -133,6 +151,7 @@ namespace fuzzyLogicToolbox
                 Array.Resize(ref par, size + 1);
 
             }
+            Mf = mfV;
             MfMode = mode;
             param = par;
             incAND = false;
